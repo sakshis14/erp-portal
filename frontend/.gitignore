@@ -1,0 +1,27 @@
+# Node
+node_modules/
+frontend/node_modules/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Env files
+.env
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# Database
+*.db
+
+# Build
+build/
+dist/
+
+# Docker
+*.tar

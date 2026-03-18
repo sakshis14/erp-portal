@@ -1,0 +1,15 @@
+name: ERP DevOps CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CI Step 
+        run: echo CI_Working  
+      - name: CD Step
+        run: echo Deploy_Success

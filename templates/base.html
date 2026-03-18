@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>
+      {% block title %}Shramic ERP | Enterprise Internship OS{% endblock %}
+    </title>
+    <meta
+      name="description"
+      content="{% block description %}The operating system for modern internship programs. Track, Manage, Certify.{% endblock %}"
+    />
+
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    {% block extra_css %}{% endblock %}
+
+    <style>
+      /*
+       * DESIGN TOKENS - Nebula Cream Theme
+       */
+      :root {
+        --bg-body: #fdfcf8;
+        --bg-glass: rgba(255, 255, 255, 0.7);
+        --bg-card: #ffffff;
+
+        /* Text */
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-tertiary: #94a3b8;
+
+        /* Brand Colors */
+        --primary: #4f46e5;
+        --primary-dark: #4338ca;
+        --primary-light: #e0e7ff;
+
+        --accent: #f59e0b;
+        --success: #10b981;
+        --success-bg: #d1fae5;
+        --error: #ef4444;
+        --error-bg: #fee2e2;
+
+        /* Structure */
+        --max-width: 1240px;
+        --nav-height: 80px;
+        --radius-lg: 24px;
+        --radius-xl: 32px;
+
+        /* Depth */
+        --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md:
+          0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-xl:
+          0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-color: 0 20px 40px -10px rgba(79, 70, 229, 0.15);
+
+        --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Reset & Base */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        font-family: "Manrope", sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+      }
+
+      /* Typography */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Space Grotesk", sans-serif;
+        line-height: 1.15;
+        color: var(--text-primary);
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .container {
+        width: 90%;
+        max-width: var(--max-width);
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.9rem 2rem;
+        border-radius: 100px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: var(--transition);
+        cursor: pointer;
+        border: none;
+        outline: none;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--text-primary);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .btn-secondary:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: #f8fafc;
+      }
+
+      /*
+       * NAVIGATION WITH PERFECT MOBILE MENU
+       */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: var(--nav-height);
+        z-index: 100;
+        transition: var(--transition);
+      }
+      .navbar.scrolled {
+        background: rgba(253, 252, 248, 0.9);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      /* Always show nav background on non-home pages */
+      .navbar.always-visible {
+        background: rgba(253, 252, 248, 0.9);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        color: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        transform: rotate(-5deg);
+        transition: var(--transition);
+      }
+      .logo:hover .logo-icon {
+        transform: rotate(0deg);
+      }
+      .logo-text {
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+      }
+
+      .nav-menu {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        list-style: none;
+      }
+      .nav-link {
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: var(--transition);
+      }
+      .nav-link:hover {
+        color: var(--primary);
+      }
+
+      .mobile-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        cursor: pointer;
+      }
+
+      /* Mobile Menu Backdrop */
+      .menu-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 98;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .menu-backdrop.active {
+        opacity: 1;
+      }
+
+      /*
+       * FOOTER
+       */
+      .footer {
+        background: #fff;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding-top: 5rem;
+        padding-bottom: 2rem;
+      }
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1.5fr;
+        gap: 3rem;
+        margin-bottom: 3rem;
+      }
+
+      .footer-col h5 {
+        font-size: 1rem;
+        margin-bottom: 1.25rem;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .footer-links {
+        list-style: none;
+      }
+      .footer-links li {
+        margin-bottom: 0.75rem;
+      }
+      .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: 0.2s;
+        font-size: 0.95rem;
+      }
+      .footer-links a:hover {
+        color: var(--primary);
+        padding-left: 4px;
+      }
+
+      /*
+       * MOBILE RESPONSIVENESS
+       */
+      @media (max-width: 768px) {
+        :root {
+          --nav-height: 70px;
+        }
+
+        /* ===== PERFECT MOBILE MENU ===== */
+        .mobile-toggle {
+          display: block;
+          z-index: 101;
+          position: relative;
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: var(--transition);
+        }
+
+        .mobile-toggle:active {
+          transform: scale(0.95);
+        }
+
+        .menu-backdrop {
+          display: block;
+        }
+
+        .nav-menu {
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 85%;
+          max-width: 320px;
+          background: white;
+          flex-direction: column;
+          padding: 0;
+          align-items: stretch;
+          transform: translateX(100%);
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: -10px 0 50px rgba(0, 0, 0, 0.15);
+          z-index: 99;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-menu.active {
+          transform: translateX(0);
+        }
+
+        /* Menu Header */
+        .nav-menu::before {
+          content: 'Menu';
+          display: block;
+          padding: 2rem 1.5rem 1rem;
+          font-family: "Space Grotesk", sans-serif;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          background: linear-gradient(180deg, #fdfcf8 0%, white 100%);
+        }
+
+        .nav-menu li {
+          width: 100%;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-menu li:last-child {
+          border-bottom: none;
+        }
+
+        .nav-link {
+          display: flex;
+          align-items: center;
+          padding: 1rem 1.5rem;
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          transition: all 0.2s ease;
+          position: relative;
+        }
+
+        .nav-link::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 4px;
+          height: 0;
+          background: var(--primary);
+          border-radius: 0 4px 4px 0;
+          transition: height 0.2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link:active {
+          background: #f8fafc;
+          color: var(--primary);
+          padding-left: 2rem;
+        }
+
+        .nav-link:hover::before,
+        .nav-link:active::before {
+          height: 60%;
+        }
+
+        /* Special styling for Sign Out link */
+        .nav-link[style*="color: #ef4444"] {
+          color: #ef4444 !important;
+        }
+
+        .nav-link[style*="color: #ef4444"]:hover {
+          background: #fef2f2;
+        }
+
+        .nav-link[style*="color: #ef4444"]::before {
+          background: #ef4444;
+        }
+
+        /* Button in mobile menu */
+        .nav-menu .btn {
+          width: calc(100% - 3rem);
+          margin: 1.5rem 1.5rem 2rem;
+          padding: 1rem 2rem;
+          font-size: 1rem;
+          justify-content: center;
+        }
+
+        .nav-menu .btn-primary {
+          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.25);
+        }
+
+        /* Add icons to menu items */
+        .nav-menu li:nth-child(2) .nav-link::after {
+          content: '\eb8f';
+          font-family: 'remixicon';
+          margin-left: auto;
+          font-size: 1.2rem;
+          color: var(--text-tertiary);
+        }
+
+        .nav-menu li:nth-child(3) .nav-link::after {
+          content: '\ee5b';
+          font-family: 'remixicon';
+          margin-left: auto;
+          font-size: 1.2rem;
+          color: var(--text-tertiary);
+        }
+
+        .nav-menu li:nth-child(4) .nav-link::after {
+          content: '\ef6f';
+          font-family: 'remixicon';
+          margin-left: auto;
+          font-size: 1.2rem;
+          color: var(--text-tertiary);
+        }
+
+        .footer-grid {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
+        }
+      }
+
+      /* Extra small devices */
+      @media (max-width: 480px) {
+        .nav-menu {
+          width: 90%;
+          max-width: 100%;
+        }
+      }
+
+      /* Animation Classes */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-15px);
+        }
+      }
+
+      {% block extra_styles %}{% endblock %}
+    </style>
+  </head>
+  <body>
+    <!-- Mobile Menu Backdrop -->
+    <div class="menu-backdrop" id="menuBackdrop"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar {% block navbar_class %}{% endblock %}" id="navbar">
+      <div class="container nav-container">
+        <a href="/" class="logo">
+          <div class="logo-icon"><i class="ri-shining-2-fill"></i></div>
+          <span class="logo-text">Shramic</span>
+        </a>
+
+        <button class="mobile-toggle" id="menuToggle" aria-label="Toggle menu">
+          <i class="ri-menu-4-line"></i>
+        </button>
+
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="/#features" class="nav-link">Platform</a></li>
+          <li><a href="/#stats" class="nav-link">Impact</a></li>
+          <li>
+            <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
+          </li>
+
+          {% if current_user.is_authenticated %}
+          <li>
+            <a
+              href="{{ url_for('admin_dashboard' if current_user.is_admin else 'intern_dashboard') }}"
+              class="btn btn-primary"
+              style="color: white"
+            >
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a
+              href="{{ url_for('logout') }}"
+              class="nav-link"
+              style="color: #ef4444"
+              >Sign Out</a
+            >
+          </li>
+          {% else %}
+          <li><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+          <li>
+            <a
+              href="{{ url_for('register') }}"
+              class="btn btn-primary"
+              style="color: white"
+              >Get Started</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <!-- BRAND -->
+          <div class="footer-col">
+            <a href="/" class="logo" style="margin-bottom: 1rem">
+              <div class="logo-icon">
+                <i class="ri-shining-2-fill"></i>
+              </div>
+              <span class="logo-text">Shramic</span>
+            </a>
+
+            <p
+              style="
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                max-width: 300px;
+              "
+            >
+              Bridging the gap between academic learning and industry execution
+              with advanced internship management tools.
+            </p>
+          </div>
+
+          <!-- PLATFORM -->
+          <div class="footer-col">
+            <h5>Platform</h5>
+            <ul class="footer-links">
+              <li><a href="/#features">Features</a></li>
+              <li><a href="/verify/certificate/">Verify Cert</a></li>
+
+              {% if current_user.is_authenticated %}
+              <li><a href="/intern/dashboard">Dashboard</a></li>
+              <li><a href="/logout">Logout</a></li>
+              {% else %}
+              <li><a href="/login">Login</a></li>
+              <li><a href="/register">Register</a></li>
+              {% endif %}
+            </ul>
+          </div>
+
+          <!-- COMPANY -->
+          <div class="footer-col">
+            <h5>Company</h5>
+            <ul class="footer-links">
+              <li><a href="https://www.shramic.com/">Main Website</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/contact">Contact</a></li>
+              <li><a href="/terms">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- BOTTOM -->
+        <div
+          style="
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+          "
+        >
+          &copy; {{ now.year }} Shramic ERP Systems. All rights reserved. Made
+          in Bangalore.
+        </div>
+      </div>
+    </footer>
+
+    <!-- Base JavaScript -->
+    <script>
+      // Enhanced Mobile Menu Toggle
+      const menuBtn = document.getElementById("menuToggle");
+      const navMenu = document.getElementById("navMenu");
+      const menuBackdrop = document.getElementById("menuBackdrop");
+      const menuIcon = menuBtn.querySelector("i");
+
+      const openMenu = () => {
+        navMenu.classList.add("active");
+        menuBackdrop.classList.add("active");
+        menuIcon.classList.replace("ri-menu-4-line", "ri-close-large-line");
+        document.body.style.overflow = "hidden";
+      };
+
+      const closeMenu = () => {
+        navMenu.classList.remove("active");
+        menuBackdrop.classList.remove("active");
+        menuIcon.classList.replace("ri-close-large-line", "ri-menu-4-line");
+        document.body.style.overflow = "auto";
+      };
+
+      menuBtn.addEventListener("click", () => {
+        if (navMenu.classList.contains("active")) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      // Close menu when clicking backdrop
+      menuBackdrop.addEventListener("click", closeMenu);
+
+      // Close menu when clicking a link
+      document.querySelectorAll(".nav-link, .nav-menu .btn").forEach((link) => {
+        link.addEventListener("click", closeMenu);
+      });
+
+      // Close menu on escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && navMenu.classList.contains("active")) {
+          closeMenu();
+        }
+      });
+
+      // Navbar Scroll Effect (only for home page without always-visible class)
+      const navbar = document.getElementById("navbar");
+      if (!navbar.classList.contains("always-visible")) {
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 20) navbar.classList.add("scrolled");
+          else navbar.classList.remove("scrolled");
+        });
+      }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>
