@@ -2800,7 +2800,12 @@ def before_request():
         conn.commit()
         conn.close()
 
+@app.route('/test')
+def test():
+    return "Backend Working 🚀"
+
+
 if __name__ == "__main__":
     init_db()
-    print("🚀 SHRAMIC ERP SYSTEM - STARTED")
+    print("🚀 SHRAMIC ERP SYSTEM – STARTED")
     app.run(debug=True, host='0.0.0.0', port=5000)
