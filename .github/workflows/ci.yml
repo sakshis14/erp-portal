@@ -10,22 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
 
-    - name: Install dependencies
-      run: |
-        pip install -r req.txt
+      - name: Install dependencies
+        run: |
+          pip install -r req.txt
 
-    - name: Run backend test
-      run: |
-        python -m py_compile app.py
+      - name: Run basic test
+        run: |
+          python -m py_compile app.py
 
-    - name: Build Docker image
-      run: |
-        docker build -t erp-backend .
+      - name: Build Docker image
+        run: |
+          docker build -t erp-app .
