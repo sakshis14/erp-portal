@@ -8,7 +8,7 @@ function App() {
 
       <button
         onClick={() => {
-         window.location.href = "http://localhost:30080/api/test";
+         window.location.href = "http://localhost:5000";
          }}
       
         style={{
