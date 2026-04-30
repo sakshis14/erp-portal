@@ -147,12 +147,13 @@ block extra_head %}
     >
       <div
         style="width: {{ task.completion_percentage }}%; height: 100%; background: var(--primary); border-radius: 2px; box-shadow: 0 0 5px var(--primary);"
-      ></div>
+      >
+    </div>
     </div>
 
     {% if task.file_url %}
     <a
-      href="{{ url_for('uploaded_file', filename='tasks/' + task.file_url) }}"
+     href="{{ url_for('serve_file', filename='tasks/' + task.file_url) }}"
       target="_blank"
       style="
         font-size: 0.85rem;

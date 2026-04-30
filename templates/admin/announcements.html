@@ -35,7 +35,6 @@ block page_title %}Notice Board{% endblock %} {% block content %}
       >
         <option value="General">General</option>
         <option value="Event">Event</option>
-        <option value="Urgent">Urgent</option>
         <option value="Training">Training</option>
       </select>
     </div>
@@ -48,8 +47,12 @@ block page_title %}Notice Board{% endblock %} {% block content %}
         class="btn-outline"
         style="width: 100%; padding: 0.6rem; border-radius: 6px"
       >
-        <option value="NORMAL">Normal</option>
-        <option value="HIGH">High Priority</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+        <option value="CRITICAL">Critical</option>
+
+
       </select>
     </div>
     <div style="grid-column: 1 / -1">

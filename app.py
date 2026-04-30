@@ -16,6 +16,12 @@ import hashlib
 import secrets
 from PIL import Image
 import pytz
+from werkzeug.security import generate_password_hash
+from flask import flash, redirect
+import smtplib
+from email.mime.text import MIMEText
+SUBMISSION_FILES_FOLDER = 'static/uploads/submissions'
+
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -387,24 +393,37 @@ def create_notification(user_id, title, message, notification_type='info', link=
     except Exception as e:
         print(f"Notification error: {e}")
 
-def save_file(file_data, folder, prefix=''):
-    if not file_data: return None
+def save_file(file_data, folder, prefix=""):
+    if not file_data:
+        return None
     try:
         if ',' in file_data:
             header, encoded = file_data.split(',', 1)
         else:
+            header = ''
             encoded = file_data
-        
+
+        os.makedirs(folder, exist_ok=True)
+
         file_bytes = base64.b64decode(encoded)
-        filename = f"{prefix}{uuid.uuid4().hex}.png"
+
+        if "image/png" in header:
+            ext = ".png"
+        elif "image/jpeg" in header:
+            ext = ".jpg"
+        elif "application/pdf" in header:
+            ext = ".pdf"
+        else:
+            ext = ".dat"
+
+        filename = f"{prefix}{uuid.uuid4().hex}{ext}"
         filepath = os.path.join(folder, filename)
-        
+
         with open(filepath, 'wb') as f:
             f.write(file_bytes)
-        
+
         return filename
-    except Exception as e:
-        print(f"File save error: {e}")
+    except Exception:
         return None
 
 def calculate_work_hours(check_in, check_out):
@@ -653,7 +672,43 @@ def login():
             flash('Invalid email or password.', 'error')
     
     return render_template('auth/login.html')
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email').lower()
 
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM users WHERE email = ?", (email,))
+        user = cur.fetchone()
+
+        if user:
+            return redirect(f'/reset-password?email={email}')
+        else:
+            return "Email not registered"
+
+    return render_template('forgot_password.html')
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+       email = request.args.get('email') or request.form.get('email')
+       email = email.lower()
+       new_password = request.form.get('password')
+       conn = get_db_connection()
+       cur = conn.cursor()
+       cur.execute("SELECT * FROM users WHERE email = ?", (email,))
+       user = cur.fetchone()
+       if user:
+            hashed_password = generate_password_hash(new_password)
+            cur.execute("UPDATE users SET password_hash = ? WHERE email = ?", (hashed_password, email))
+            conn.commit()
+            flash("Password updated successfully!", "success")
+            return redirect('/login')
+       else:
+            return "Email not found"
+
+    return render_template('reset_password.html')
 @app.route('/logout')
 @login_required
 def logout():
@@ -1150,9 +1205,7 @@ def admin_tasks():
     roles = [r['role'] for r in cur.fetchall()]
     
     conn.close()
-    
-    return render_template('admin/tasks.html', tasks=tasks, interns=interns, roles=roles)
-
+    return render_template('admin/tasks.html', tasks=tasks, interns=interns, roles=roles, today=date.today().isoformat())
 @app.route('/admin/task/<int:task_id>/delete', methods=['POST'])
 @login_required
 @admin_required
@@ -2342,7 +2395,15 @@ def intern_leave():
         # Calculate total days
         start = datetime.strptime(start_date, '%Y-%m-%d')
         end = datetime.strptime(end_date, '%Y-%m-%d')
+        today = datetime.today().date()
+        if start.date() < today:
+            flash('Past dates are not allowed', 'danger')
+            return redirect(url_for('intern_leave'))
+        if end < start:
+            flash('End date cannot be before start date', 'danger')
+            return redirect(url_for('intern_leave'))
         total_days = (end - start).days + 1
+        
         
         conn = get_db_connection()
         cur = conn.cursor()
@@ -2745,9 +2806,11 @@ def api_stats():
         'today_attendance': today_attendance,
         'pending_submissions': pending_submissions
     })
+from flask import send_from_directory
+import os
 
 @app.route('/uploads/<path:filename>')
-def uploaded_file(filename):
+def serve_file(filename):
     return send_from_directory('static/uploads', filename)
 
 @app.errorhandler(404)
@@ -2803,6 +2866,8 @@ def before_request():
 @app.route('/test')
 def test():
     return "Backend Working 🚀"
+
+
 
 
 if __name__ == "__main__":

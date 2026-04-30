@@ -278,23 +278,11 @@
       <div class="form-grid">
         <div>
           <label class="glass-label">Start Date</label>
-          <input
-            type="date"
-            name="start_date"
-            id="start_date"
-            required
-            class="glass-input"
-          />
+          <input type="date" name="start_date" id="start_date" required class="glass-input" min="1900-01-01">
         </div>
         <div>
           <label class="glass-label">End Date</label>
-          <input
-            type="date"
-            name="end_date"
-            id="end_date"
-            required
-            class="glass-input"
-          />
+          <input type="date" name="end_date" id="end_date" required class="glass-input">
         </div>
       </div>
 
@@ -408,6 +396,7 @@
   const startInput = document.getElementById("start_date");
   const endInput = document.getElementById("end_date");
   const durationSpan = document.getElementById("duration-span");
+
 
   function calcDays() {
     if (startInput.value && endInput.value) {

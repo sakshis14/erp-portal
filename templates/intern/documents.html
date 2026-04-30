@@ -171,7 +171,7 @@ block extra_head %}
         <tr>
           <td>
             <a
-              href="{{ url_for('uploaded_file', filename='documents/' + doc.file_url) }}"
+              href="{{ url_for('serve_file', filename=doc.file_url) }}"
               target="_blank"
               style="
                 color: var(--text-main);

@@ -81,7 +81,7 @@
           </p>
           {% if sub.file_url %}
           <a
-            href="{{ url_for('uploaded_file', filename='submissions/' + sub.file_url) }}"
+           href="{{ url_for('serve_file', filename='submissions/' + sub.file_url) }}"
             target="_blank"
             style="
               font-size: 0.8rem;
