@@ -1,3 +1,4 @@
+
 # ERP Portal – DevOps Project
 
 A comprehensive ERP system for efficient **intern and employee management** built using **Flask and DevOps practices**.
@@ -8,6 +9,7 @@ A comprehensive ERP system for efficient **intern and employee management** buil
 ![CI/CD](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-blue)
 ![Docker](https://img.shields.io/badge/Docker-Container-blue)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestration-blue)
+CICD UPDATED
 
 ---
 
