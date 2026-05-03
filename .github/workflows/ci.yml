@@ -29,3 +29,15 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t erp-app .
+      - name: Deploy to EC
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: 13.60.229.246
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user
+            docker stop erp-app || true
+            docker rm erp-app || true
+            docker build -t erp-app .
+            docker run -d -p 5000:5000 --name erp-app erp-app
