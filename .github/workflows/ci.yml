@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
@@ -29,20 +29,25 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t erp-app .
-      - name: Deploy to EC
+
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: 13.60.229.246
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-      script: |
-          cd /home/ec2-user
-          if [ ! -d "erp-portal" ]; then
-            git clone https://github.com/sakshis14/erp-portal.git
-          fi
-          cd erp-portal
-          git pull origin main
-          docker stop erp-app || true
-          docker rm erp-app || true
-          docker build -t erp-app .
-           docker run -d -p 5000:5000 --name erp-app erp-app
+          script: |
+            cd /home/ec2-user
+
+            if [ ! -d "erp-portal" ]; then
+              git clone https://github.com/sakshis14/erp-portal.git
+            fi
+
+            cd erp-portal
+            git pull origin main
+
+            docker stop erp-app || true
+            docker rm erp-app || true
+
+            docker build -t erp-app .
+            docker run -d -p 5000:5000 --name erp-app erp-app
