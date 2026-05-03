@@ -37,16 +37,8 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ec2-user
-
-            if [ ! -d "erp-portal" ]; then
-              git clone https://github.com/sakshis14/erp-portal.git
-            fi
-
-            cd erp-portal
-            git pull origin main
-
-            docker stop erp-app || true
-            docker rm erp-app || true
-
-            docker run -d -p 5000:5000 --name erp-app sakshicloud77/erp-app
+           cd /home/ec2-user
+           docker pull sakshicloud77/erp-app
+           docker stop erp-app || true
+           docker rm erp-app || true
+           docker run -d -p 5000:5000 --name erp-app sakshicloud77/erp-app
