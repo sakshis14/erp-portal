@@ -1274,6 +1274,39 @@ def admin_submissions():
                          submissions=submissions, 
                          current_status=status_filter)
 
+@app.route('/admin/document-verification')
+@login_required
+@admin_required
+def admin_document_verification():
+    return redirect(url_for('admin_documents'))
+
+
+@app.route('/admin/documents')
+@login_required
+@admin_required
+def admin_documents():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    status_filter = request.args.get('status', 'PENDING')
+
+    cur.execute("""
+        SELECT dv.*, u.full_name, u.intern_id, u.photo_url
+        FROM document_verifications dv
+        JOIN users u ON dv.user_id = u.id
+        WHERE dv.status = ?
+        ORDER BY dv.uploaded_at DESC
+    """, (status_filter,))
+
+    documents = cur.fetchall()
+    conn.close()
+
+    return render_template(
+        'admin/documents.html',
+        documents=documents,
+        current_status=status_filter
+    )
+
 @app.route('/admin/submission/<int:submission_id>/approve', methods=['POST'])
 @login_required
 @admin_required
@@ -1342,28 +1375,7 @@ def reject_submission(submission_id):
     flash('Submission rejected.', 'info')
     return redirect(url_for('admin_submissions'))
 
-@app.route('/admin/document-verification')
-@login_required
-@admin_required
-def admin_document_verification():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    status_filter = request.args.get('status', 'PENDING')
-    
-    cur.execute("""
-        SELECT dv.*, u.intern_id, u.full_name, u.photo_url
-        FROM document_verifications dv
-        JOIN users u ON dv.user_id = u.id
-        WHERE dv.status = ?
-        ORDER BY dv.uploaded_at DESC
-    """, (status_filter,))
-    documents = cur.fetchall()
-    
-    conn.close()
-    return render_template('admin/document_verification.html',
-                         documents=documents,
-                         current_status=status_filter)
+
 
 @app.route('/admin/document/<int:doc_id>/verify', methods=['POST'])
 @login_required
@@ -2651,6 +2663,16 @@ def intern_documents():
     
     conn.close()
     return render_template('intern/documents.html', documents=documents)
+
+from flask import send_from_directory
+import os
+
+
+UPLOAD_FOLDER = os.path.join('static', 'uploads', 'documents')
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 @app.route('/intern/notifications')
 @login_required

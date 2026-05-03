@@ -397,6 +397,15 @@
           >
         </li>
         <li>
+  <a
+    href="{{ url_for('admin_documents') }}"
+    class="nav-link {% if request.endpoint == 'admin_documents' %}active{% endif %}"
+  >
+    <i class="ri-file-list-3-line"></i> Documents
+  </a>
+</li>
+</a>
+        <li>
           <a
             href="{{ url_for('admin_attendance') }}"
             class="nav-link {% if request.endpoint == 'admin_attendance' %}active{% endif %}"

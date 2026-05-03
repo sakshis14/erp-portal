@@ -191,10 +191,15 @@ block extra_head %}
             <span class="status-badge st-{{ doc.status }}"
               >{{ doc.status }}</span
             >
-          </td>
           <td style="color: var(--danger); font-size: 0.9rem">
-            {{ doc.rejection_reason if doc.rejection_reason else '-' }}
-          </td>
+            {% if doc.status == 'REJECTED' %}
+            {{ doc['rejection_reason'] or 'No reason provided' }}
+            {% elif doc.status == 'VERIFIED' %}
+            Verified by Admin
+            {% else %}
+             -
+             {% endif %}
+            </td>
         </tr>
         {% else %}
         <tr>

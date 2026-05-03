@@ -481,14 +481,7 @@ cert.full_name }}{% endblock %} {% block extra_head %}
   <!-- CERTIFICATE BODY -->
   <div id="certificate-capture-area">
     <!-- Company Logo (Top Right) -->
-    <img
-      src="{{ url_for('static', filename='images/sdc.png') }}"
-      class="cert-company-logo"
-      alt="Shramic Logo"
-      crossorigin="anonymous"
-      loading="eager"
-      onerror="this.style.display = 'none'"
-    />
+    
 
     <div class="cert-outer-border">
       <div class="cert-inner-border">
@@ -497,12 +490,13 @@ cert.full_name }}{% endblock %} {% block extra_head %}
 
         <!-- Logo Box with Shramic Logo -->
         <div class="cert-logo-box">
-          <img
-            src="{{ url_for('static', filename='images/sdc.png') }}"
-            alt="Shramic Logo"
-            crossorigin="anonymous"
-            loading="eager"
-            onerror="this.outerHTML = '<i class=\'fas fa-certificate\'></i>'"
+          <img 
+          src="{{ url_for('static', filename='images/favicon.png') }}"
+          alt="Shramic Logo"
+          style="width: 60px; height: 60px; object-fit: contain;"
+          crossorigin="anonymous"
+          loading="eager"
+          onerror="this.outerHTML = '<i class=\'fas fa-certificate\'></i>'"
           />
         </div>
 

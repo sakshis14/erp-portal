@@ -1,0 +1,116 @@
+{% extends "admin/base.html" %}
+{% block title %}Document Approvals{% endblock %}
+{% block page_title %}Document Approvals{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div class="btn-group" style="display: flex; gap: 0.5rem">
+      <a href="{{ url_for('admin_documents', status='PENDING') }}"
+         class="btn {% if current_status == 'PENDING' %}btn-primary{% else %}btn-outline{% endif %}">
+        Pending
+      </a>
+      <a href="{{ url_for('admin_documents', status='VERIFIED') }}"
+         class="btn {% if current_status == 'VERIFIED' %}btn-primary{% else %}btn-outline{% endif %}">
+        Approved
+      </a>
+      <a href="{{ url_for('admin_documents', status='REJECTED') }}"
+         class="btn {% if current_status == 'REJECTED' %}btn-primary{% else %}btn-outline{% endif %}">
+        Rejected
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Intern</th>
+          <th>Type</th>
+          <th>Document Name</th>
+          <th>Uploaded At</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for doc in documents %}
+        <tr>
+          <td>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <img
+                src="{{ url_for('static', filename='uploads/profiles/' + doc.photo_url) if doc.photo_url else 'https://ui-avatars.com/api/?name=' + doc.full_name }}"
+                style="width: 32px; height: 32px; border-radius: 50%"
+              />
+              <div>
+                <div style="font-weight: 600">{{ doc.full_name }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-light)">
+                  {{ doc.intern_id }}
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="badge badge-neutral">{{ doc.document_type }}</span>
+          </td>
+
+          <td>
+            <div style="font-weight: 500">{{ doc.admin_comment or '-' }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-light)">
+              {{ doc.file_url }}
+            </div>
+          </td>
+
+          <td>{{ doc.uploaded_at }}</td>
+
+          <td>
+            <span class="badge {% if doc.status == 'PENDING' %}badge-warning{% elif doc.status == 'VERIFIED' %}badge-success{% else %}badge-danger{% endif %}">
+              {{ doc.status }}
+            </span>
+          </td>
+
+          <td>
+            {% if doc.status == 'PENDING' %}
+            <div style="display: flex; gap: 5px">
+              <form action="{{ url_for('verify_document', doc_id=doc.id) }}" method="POST" style="display: inline">
+                <button type="submit" class="btn-icon" style="color: var(--success)" title="Approve">
+                  <i class="ri-check-line"></i>
+                </button>
+              </form>
+
+              <form action="{{ url_for('reject_document', doc_id=doc.id) }}" method="POST" style="display: inline">
+                <input
+                  type="text"
+                  name="reason"
+                  placeholder="Reason"
+                  required
+                  style="padding: 2px 5px; font-size: 0.7rem; width: 80px; border: 1px solid var(--border); border-radius: 4px;"
+                />
+                <button type="submit" class="btn-icon" style="color: var(--danger)" title="Reject">
+                  <i class="ri-close-line"></i>
+                </button>
+              </form>
+            </div>
+            {% else %}
+            <span style="font-size: 0.8rem; color: var(--text-light)">Reviewed</span>
+            {% endif %}
+          </td>
+        </tr>
+
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-light)">
+            <i class="ri-inbox-line" style="font-size: 2rem; display: block; margin-bottom: 0.5rem"></i>
+            No documents found in this category.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
