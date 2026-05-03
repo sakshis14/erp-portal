@@ -49,5 +49,4 @@ jobs:
             docker stop erp-app || true
             docker rm erp-app || true
 
-            docker build -t erp-app .
-            docker run -d -p 5000:5000 --name erp-app erp-app
+            docker run -d -p 5000:5000 --name erp-app sakshicloud77/erp-app
