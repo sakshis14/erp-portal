@@ -2682,6 +2682,9 @@ def delete_intern_document(doc_id):
     flash("Document deleted successfully!", "success")
     return redirect(url_for('intern_documents'))
 
+
+    
+
 from flask import send_from_directory
 import os
 

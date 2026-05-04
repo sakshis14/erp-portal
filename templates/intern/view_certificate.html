@@ -465,17 +465,13 @@ cert.full_name }}{% endblock %} {% block extra_head %}
   <!-- Action Bar -->
   <div class="action-bar">
     <button class="btn-action btn-jpg" onclick="exportJPG()" id="btnJPG">
-      <i class="fas fa-image"></i> Download JPG
-    </button>
-    <button class="btn-action btn-pdf" onclick="window.print()">
-      <i class="fas fa-file-pdf"></i> Download PDF
-    </button>
-    <a href="/verify/certificate/" class="btn-action btn-verify">
-      <i class="fas fa-qrcode"></i> Scan to Verify
-    </a>
-    <a href="{{ url_for('intern_certificates') }}" class="btn-action btn-back">
-      <i class="fas fa-arrow-left"></i> Back
-    </a>
+  <i class="fas fa-image"></i> Download JPG
+</button>
+
+<a href="{{ url_for('intern_certificates') }}"
+   class="btn-action btn-back">
+  <i class="fas fa-arrow-left"></i> Back
+</a>
   </div>
 
   <!-- CERTIFICATE BODY -->
