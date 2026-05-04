@@ -26,9 +26,14 @@ jobs:
         run: |
           python -m py_compile app.py
 
-      - name: Build Docker image
+      - name: Login to Docker Hub
         run: |
-          docker build -t erp-app .
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "sakshicloud77" --password-stdin
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t sakshicloud77/erp-app:latest .
+          docker push sakshicloud77/erp-app:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
@@ -37,7 +42,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-           cd /home/ec2-user
-           docker pull sakshicloud77/erp-app
-           docker rm -f erp-app || true
-           docker run -d -p 80:5000 --name erp-app sakshicloud77/erp-app
+            docker rm -f erp-app || true
+            docker rmi sakshicloud77/erp-app:latest || true
+            docker pull sakshicloud77/erp-app:latest
+            docker run -d -p 80:5000 --name erp-app sakshicloud77/erp-app:latest
