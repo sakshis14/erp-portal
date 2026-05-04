@@ -100,7 +100,6 @@
   <h3 style="border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">Upload History</h3>
 
   <table class="doc-table">
-
     <thead>
       <tr>
         <th>Document</th>
@@ -111,10 +110,8 @@
     </thead>
 
     <tbody>
-
       {% for doc in documents %}
       <tr>
-
         <td>
           <div style="display:flex; align-items:center; gap:10px;">
             <i class="fas fa-file-alt" style="color: var(--primary)"></i>
@@ -127,17 +124,21 @@
         <td>{{ doc.uploaded_at }}</td>
 
         <td>
-          <div style="display:flex; gap:10px;">
+          <div style="display:flex; gap:10px; align-items:center;">
 
             <!-- VIEW -->
+            {% if doc.file_url %}
             <a href="{{ url_for('serve_file', filename=doc.file_url) }}"
                target="_blank"
                class="action-btn view-btn">
               View
             </a>
+            {% else %}
+            <span style="color: var(--text-muted); font-size: 0.85rem;">No File</span>
+            {% endif %}
 
             <!-- DELETE -->
-            <form action="{{ url_for('delete_intern_document', doc_id=doc.id) }}" method="POST">
+            <form action="{{ url_for('delete_intern_document', doc_id=doc.id) }}" method="POST" style="margin:0;">
               <button type="submit"
                       onclick="return confirm('Delete this document?')"
                       class="action-btn delete-btn">
@@ -147,7 +148,6 @@
 
           </div>
         </td>
-
       </tr>
 
       {% else %}
@@ -157,16 +157,31 @@
         </td>
       </tr>
       {% endfor %}
-
     </tbody>
   </table>
 
 </div>
 
 <script>
-function handleFile(input){
-  if(input.files.length>0){
-    document.getElementById("file-name").innerText = input.files[0].name;
+function handleFile(input) {
+  if (input.files.length > 0) {
+    document.getElementById("file-name").innerText =
+      "Selected: " + input.files[0].name;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      let hidden = document.getElementById("b64-input");
+      if (!hidden) {
+        hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = "file_data";
+        hidden.id = "b64-input";
+        input.form.appendChild(hidden);
+        input.name = "";
+      }
+      hidden.value = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
   }
 }
 </script>
