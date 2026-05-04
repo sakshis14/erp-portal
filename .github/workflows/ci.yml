@@ -32,7 +32,7 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t sakshicloud77/erp-app:latest .
+          docker build --no-cache -t sakshicloud77/erp-app:latest .
           docker push sakshicloud77/erp-app:latest
 
       - name: Deploy to EC2
