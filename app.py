@@ -2664,6 +2664,24 @@ def intern_documents():
     conn.close()
     return render_template('intern/documents.html', documents=documents)
 
+@app.route('/intern/document/delete/<int:doc_id>', methods=['POST'])
+@login_required
+def delete_intern_document(doc_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    
+    cur.execute(
+        "DELETE FROM document_verifications WHERE id = ? AND user_id = ?",
+        (doc_id, current_user.id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    flash("Document deleted successfully!", "success")
+    return redirect(url_for('intern_documents'))
+
 from flask import send_from_directory
 import os
 
