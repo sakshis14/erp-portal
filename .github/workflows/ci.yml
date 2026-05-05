@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +35,7 @@ jobs:
           docker build --no-cache -t sakshicloud77/erp-app:latest .
           docker push sakshicloud77/erp-app:latest
 
-        - name: Deploy to EC2
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: 13.60.56.116
