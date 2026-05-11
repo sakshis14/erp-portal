@@ -30,9 +30,12 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "sakshicloud77" --password-stdin
 
-      - name: Build and Push Docker image
+      - name: Build Docker Image
         run: |
           docker build --no-cache -t sakshicloud77/erp-app:latest .
+
+      - name: Push Docker Image
+        run: |
           docker push sakshicloud77/erp-app:latest
 
       - name: Deploy to EC2
@@ -45,5 +48,5 @@ jobs:
             docker rm -f erp-portal || true
             docker rmi sakshicloud77/erp-app:latest || true
             docker pull sakshicloud77/erp-app:latest
-            docker run -d -p 5000:5000 --name erp-portal sakshicloud77/erp-app:latest
+            docker run -d -p 5000:5000 --restart always --name erp-portal sakshicloud77/erp-app:latest
             sudo systemctl restart nginx
