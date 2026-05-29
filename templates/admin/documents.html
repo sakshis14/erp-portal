@@ -12,7 +12,7 @@
           <th>Type</th>
           <th>Document Name</th>
           <th>Uploaded At</th>
-          <th>Actions</th> <!-- ✅ Status removed -->
+          <th>Actions</th>
         </tr>
       </thead>
 
@@ -41,15 +41,15 @@
           <td>
             <div style="font-weight: 500">{{ doc.admin_comment or '-' }}</div>
             <div style="font-size: 0.75rem; color: var(--text-light)">
-              {{ doc.file_url }}
+              {{ doc.file_url or 'No file uploaded' }}
             </div>
           </td>
 
           <td>{{ doc.uploaded_at }}</td>
 
-          <!-- ✅ ONLY VIEW + DOWNLOAD -->
           <td>
             <div style="display: flex; gap: 8px">
+              {% if doc.file_url %}
               <a href="{{ url_for('serve_file', filename=doc.file_url) }}"
                  target="_blank"
                  class="btn btn-outline">
@@ -61,9 +61,13 @@
                  class="btn btn-primary">
                 Download
               </a>
+              {% else %}
+              <span style="color: var(--text-light); font-size: 0.85rem;">
+                No File
+              </span>
+              {% endif %}
             </div>
           </td>
-
         </tr>
 
         {% else %}

@@ -2627,12 +2627,19 @@ def intern_documents():
     if request.method == 'POST':
         document_type = request.form.get('document_type')
         document_name = request.form.get('document_name')
-        file_data = request.form.get('file_data')
-        
+        file_data = request.files.get('file_data')
+        print("FILE =", file_data)
+        print("FILENAME =", file_data.filename if file_data else "NONE")
+        if not file_data or file_data.filename == '':
+            flash('Please select a document file before uploading.', 'error')
+            return redirect(url_for('intern_documents'))
         file_filename = None
         if file_data:
-            file_filename = save_file(file_data, DOCUMENT_FOLDER, 
-                                     f"{current_user.intern_id}_doc_")
+            os.makedirs(DOCUMENT_FOLDER, exist_ok=True)
+            ext = os.path.splitext(file_data.filename)[1]
+            file_filename = f"{current_user.intern_id}_doc_{uuid.uuid4().hex}{ext}"
+            file_data.save(os.path.join(DOCUMENT_FOLDER, file_filename))
+            print("FILE SAVED =", file_filename)
         
         conn = get_db_connection()
         cur = conn.cursor()

@@ -51,11 +51,12 @@
   }
 
   .delete-btn {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.4);
+    background: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
     cursor: pointer;
-  }
+    font-weight: 700;
+}
 </style>
 {% endblock %}
 
@@ -65,7 +66,7 @@
   <h2 style="margin-bottom: 1.5rem; font-weight: 700">Document Repository</h2>
 
   <!-- Upload -->
-  <form action="{{ url_for('intern_documents') }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ url_for('intern_documents') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateUpload()">
 
     <div class="upload-zone" onclick="document.getElementById('file-input').click()">
       <input type="file" name="file_data" id="file-input" style="display:none" onchange="handleFile(this)">
@@ -78,22 +79,22 @@
       <div id="file-name" style="margin-top: 1rem; color: var(--primary); font-weight: 700"></div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; margin-bottom: 2rem;">
-      <select name="document_type" required style="padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.3); color: white;">
-        <option value="">Select Type</option>
-        <option value="ID_PROOF">ID Proof</option>
-        <option value="RESUME">Resume</option>
-        <option value="CERTIFICATE">Certificate</option>
-      </select>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 120px; gap: 1rem; margin-bottom: 2rem; align-items: center;">
+  <select name="document_type" required style="height: 44px; padding: 0 12px; border-radius: 10px; background: rgba(0,0,0,0.3); color: white;">
+    <option value="">Select Type</option>
+    <option value="ID_PROOF">ID Proof</option>
+    <option value="RESUME">Resume</option>
+    <option value="CERTIFICATE">Certificate</option>
+  </select>
 
-      <input type="text" name="document_name" placeholder="Document Name" required
-             style="padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.3); color: white;">
+  <input type="text" name="document_name" placeholder="Document Name" required
+         style="height: 44px; padding: 0 12px; border-radius: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border);">
 
-      <button type="submit"
-              style="padding: 12px 24px; background: var(--primary); color: white; border-radius: 10px; font-weight: 700;">
-        Upload
-      </button>
-    </div>
+  <button type="submit"
+          style="height: 44px; padding: 0 20px; background: var(--primary); color: white; border-radius: 10px; font-weight: 700; border: none;">
+    Upload
+  </button>
+</div>
   </form>
 
   <!-- Table -->
@@ -162,26 +163,12 @@
 
 </div>
 
+
 <script>
 function handleFile(input) {
   if (input.files.length > 0) {
     document.getElementById("file-name").innerText =
       "Selected: " + input.files[0].name;
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      let hidden = document.getElementById("b64-input");
-      if (!hidden) {
-        hidden = document.createElement("input");
-        hidden.type = "hidden";
-        hidden.name = "file_data";
-        hidden.id = "b64-input";
-        input.form.appendChild(hidden);
-        input.name = "";
-      }
-      hidden.value = e.target.result;
-    };
-    reader.readAsDataURL(input.files[0]);
   }
 }
 </script>
