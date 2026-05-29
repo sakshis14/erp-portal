@@ -51,8 +51,8 @@ block extra_head %}
     cursor: pointer;
     box-shadow: 0 4px 15px var(--primary-glow);
     transition: 0.3s;
-    height: 48%;
-    width: 220%;
+    height: 48px;
+    width: 430px;
   }
   .btn-create:hover {
     transform: translateY(-2px);
@@ -204,11 +204,17 @@ block extra_head %}
         </div>
 
         <div>
-          <label class="glass-label">Target Date</label>
-          <input type="date" name="target_date" class="glass-input" id="target_date" />
-        </div>
+  <label class="glass-label">Target Date</label>
+  <input
+    type="date"
+    name="target_date"
+    class="glass-input"
+    id="target_date"
+    required
+  />
+</div>
 
-        <div style="grid-column: 1 / -1; text-align:center; margin-top:15px;">
+<div style="display:flex; align-items:end;">
     <button type="submit" class="btn-create">
         Create Goal
     </button>
@@ -306,4 +312,10 @@ block extra_head %}
   </div>
   {% endif %}
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let today = new Date().toISOString().split("T")[0];
+    document.getElementById("target_date").setAttribute("min", today);
+});
+</script>
 {% endblock %}
