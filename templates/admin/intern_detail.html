@@ -294,7 +294,7 @@
         </div>
         <div style="display: flex; justify-content: space-between">
           <span style="color: var(--text-secondary)">Department</span>
-          <span>{{ intern.department }}</span>
+          <span>{{ 'MCA' if intern.department == 'Other' else intern.department }}</span>
         </div>
         <div style="display: flex; justify-content: space-between">
           <span style="color: var(--text-secondary)">Joined</span>

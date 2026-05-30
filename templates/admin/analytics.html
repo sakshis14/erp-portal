@@ -57,7 +57,6 @@ endblock %} {% block content %}
     margin-bottom: 1.5rem;
   }
 
-  /* Leaderboard Styling */
   .leaderboard-list {
     list-style: none;
     padding: 0;
@@ -90,15 +89,15 @@ endblock %} {% block content %}
   .rank-1 {
     background: #fef3c7;
     color: #d97706;
-  } /* Gold */
+  }
   .rank-2 {
     background: #f1f5f9;
     color: #64748b;
-  } /* Silver */
+  }
   .rank-3 {
     background: #ffedd5;
     color: #c2410c;
-  } /* Bronze */
+  }
 
   @media (max-width: 1024px) {
     .charts-grid {
@@ -112,11 +111,13 @@ endblock %} {% block content %}
   <div class="kpi-box">
     <div class="kpi-title">Avg. Attendance</div>
     <div class="kpi-number">
-      {% if attendance_trend %} {# Calculate simple avg from trend data #} {%
-      set total_p = namespace(value=0) %} {% for day in attendance_trend %}{%
-      set total_p.value = total_p.value + day.count %}{% endfor %} {{
-      (total_p.value / attendance_trend|length)|round(1) if
-      attendance_trend|length > 0 else 0 }} {% else %}0{% endif %}
+      {% if attendance_trend %}
+      {% set total_p = namespace(value=0) %}
+      {% for day in attendance_trend %}
+      {% set total_p.value = total_p.value + day.count %}
+      {% endfor %}
+      {{ (total_p.value / attendance_trend|length)|round(1) if attendance_trend|length > 0 else 0 }}
+      {% else %}0{% endif %}
     </div>
     <div style="font-size: 0.8rem; color: var(--success); margin-top: 5px">
       Daily Users
@@ -126,8 +127,9 @@ endblock %} {% block content %}
   <div class="kpi-box">
     <div class="kpi-title">Completion Rate</div>
     <div class="kpi-number">
-      {% if task_stats.total > 0 %} {{ ((task_stats.completed /
-      task_stats.total) * 100)|int }}% {% else %}0%{% endif %}
+      {% if task_stats.total > 0 %}
+      {{ ((task_stats.completed / task_stats.total) * 100)|int }}%
+      {% else %}0%{% endif %}
     </div>
     <div style="font-size: 0.8rem; color: var(--text-light); margin-top: 5px">
       {{ task_stats.completed }} / {{ task_stats.total }} Tasks
@@ -137,10 +139,11 @@ endblock %} {% block content %}
   <div class="kpi-box">
     <div class="kpi-title">Active Interns</div>
     <div class="kpi-number">
-      {# Calculate total from role distribution #} {% set total_active =
-      namespace(value=0) %} {% for role in role_distribution %}{% set
-      total_active.value = total_active.value + role.count %}{% endfor %} {{
-      total_active.value }}
+      {% set total_active = namespace(value=0) %}
+      {% for role in role_distribution %}
+      {% set total_active.value = total_active.value + role.count %}
+      {% endfor %}
+      {{ total_active.value }}
     </div>
     <div style="font-size: 0.8rem; color: var(--primary); margin-top: 5px">
       Across {{ department_stats|length }} Depts
@@ -148,35 +151,13 @@ endblock %} {% block content %}
   </div>
 </div>
 
-<!-- 2. Main Charts Area -->
+<!-- 2. Role Distribution + Top Performers -->
 <div class="charts-grid">
-  <!-- Line Chart: Attendance Trend -->
-  <div class="chart-card">
-    <div class="chart-header">
-      <h3>Attendance Trend</h3>
-      <select
-        style="
-          padding: 5px;
-          border-radius: 6px;
-          border: 1px solid var(--border);
-        "
-      >
-        <option>Last 30 Days</option>
-      </select>
-    </div>
-    <div style="height: 300px; width: 100%">
-      <canvas id="attendanceChart"></canvas>
-    </div>
-  </div>
-
-  <!-- Doughnut Chart: Role Distribution -->
   <div class="chart-card">
     <div class="chart-header">
       <h3>Role Distribution</h3>
     </div>
-    <div
-      style="height: 250px; width: 100%; display: flex; justify-content: center"
-    >
+    <div style="height: 250px; width: 100%; display: flex; justify-content: center">
       <canvas id="roleChart"></canvas>
     </div>
     <div
@@ -190,21 +171,7 @@ endblock %} {% block content %}
       Total active roles in system
     </div>
   </div>
-</div>
 
-<!-- 3. Secondary Metrics Grid -->
-<div class="charts-grid">
-  <!-- Bar Chart: Department Stats -->
-  <div class="chart-card">
-    <div class="chart-header">
-      <h3>Department Breakdown</h3>
-    </div>
-    <div style="height: 300px; width: 100%">
-      <canvas id="deptChart"></canvas>
-    </div>
-  </div>
-
-  <!-- Top Performers List -->
   <div class="chart-card" style="overflow-y: auto">
     <div class="chart-header">
       <h3>Top Performers</h3>
@@ -243,41 +210,19 @@ endblock %} {% block content %}
   </div>
 </div>
 
+<!-- 3. Department Breakdown Full Width -->
+<div class="chart-card" style="height: 400px; margin-bottom: 2rem">
+  <div class="chart-header">
+    <h3>Department Breakdown</h3>
+  </div>
+  <div style="height: 300px; width: 100%">
+    <canvas id="deptChart"></canvas>
+  </div>
+</div>
+
 <!-- CHART JS CONFIGURATION -->
 <script>
-  // 1. Attendance Chart
-  const ctxAtt = document.getElementById('attendanceChart').getContext('2d');
-  const attData = {
-      labels: [{% for d in attendance_trend %}"{{ d.date }}",{% endfor %}],
-      data: [{% for d in attendance_trend %}{{ d.count }},{% endfor %}]
-  };
-
-  new Chart(ctxAtt, {
-      type: 'line',
-      data: {
-          labels: attData.labels,
-          datasets: [{
-              label: 'Present Interns',
-              data: attData.data,
-              borderColor: '#4F46E5',
-              backgroundColor: 'rgba(79, 70, 229, 0.1)',
-              fill: true,
-              tension: 0.4,
-              pointRadius: 3
-          }]
-      },
-      options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-              y: { beginAtZero: true, grid: { color: '#F1F5F9' } },
-              x: { grid: { display: false } }
-          }
-      }
-  });
-
-  // 2. Role Distribution Chart
+  // 1. Role Distribution Chart
   const ctxRole = document.getElementById('roleChart').getContext('2d');
   const roleData = {
       labels: [{% for r in role_distribution %}"{{ r.role }}",{% endfor %}],
@@ -303,7 +248,7 @@ endblock %} {% block content %}
       }
   });
 
-  // 3. Department Chart
+  // 2. Department Chart
   const ctxDept = document.getElementById('deptChart').getContext('2d');
   const deptData = {
       labels: [{% for d in department_stats %}"{{ d.department or 'Unknown' }}",{% endfor %}],

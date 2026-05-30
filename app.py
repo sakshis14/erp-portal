@@ -72,20 +72,20 @@ def make_session_permanent():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(days=365)
     
-    if current_user.is_authenticated:
-        try:
-            conn = get_db_connection()
-            cur = conn.cursor()
-            current_timestamp = format_datetime(get_current_datetime())
-            cur.execute("UPDATE users SET updated_at = ? WHERE id = ?", 
-                       (current_timestamp, current_user.id))
-            conn.commit()
-            conn.close()
-        except:
-            pass
+    #if current_user.is_authenticated:
+    #       conn = get_db_connection()
+    #       cur = conn.cursor()
+    #      current_timestamp = format_datetime(get_current_datetime())
+    #        cur.execute("UPDATE users SET updated_at = ? WHERE id = ?", 
+    #                  (current_timestamp, current_user.id))
+    #        conn.commit()
+    #       conn.close()
+    #    except:
+    #       pass
 
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE, timeout=30)
+    conn.execute("PRAGMA busy_timeout = 30000")
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -382,7 +382,7 @@ def log_activity(user_id, action, entity_type=None, entity_id=None, details=None
 
 def create_notification(user_id, title, message, notification_type='info', link=None):
     try:
-        conn = get_db_connection()
+        conn = sqlite3.connect(DATABASE, timeout=30)
         cur = conn.cursor()
         cur.execute('''
             INSERT INTO notifications (user_id, title, message, type, link)
@@ -1794,19 +1794,19 @@ def admin_messages():
                     VALUES (?, ?, ?, ?, 1)
                 """, (current_user.id, user['id'], subject, content))
                 
-                create_notification(user['id'], f'New Message: {subject}', 
-                                  content[:100], 'info', url_for('intern_messages'))
+                #create_notification(user['id'], f'New Message: {subject}', 
+                 #                 content[:100], 'info', url_for('intern_messages'))
         else:
             cur.execute("""
                 INSERT INTO messages (sender_id, recipient_id, subject, content)
                 VALUES (?, ?, ?, ?)
             """, (current_user.id, recipient_id, subject, content))
             
-            create_notification(int(recipient_id), f'New Message: {subject}', 
-                              content[:100], 'info', url_for('intern_messages'))
+            #create_notification(int(recipient_id), f'New Message: {subject}', 
+            #                 content[:100], 'info', url_for('intern_messages'))
         
         conn.commit()
-        log_activity(current_user.id, 'SEND_MESSAGE', 'messages')
+        #log_activity(current_user.id, 'SEND_MESSAGE', 'messages')
         
         conn.close()
         flash('Message sent successfully!', 'success')
@@ -1886,11 +1886,20 @@ def admin_analytics():
     
     # Department-wise stats
     cur.execute("""
-        SELECT department, COUNT(*) as count
-        FROM users
-        WHERE is_admin = 0 AND department IS NOT NULL
-        GROUP BY department
-    """)
+    SELECT
+        CASE
+            WHEN department = 'Other' THEN 'MCA'
+            ELSE department
+        END as department,
+        COUNT(*) as count
+    FROM users
+    WHERE is_admin = 0 AND department IS NOT NULL
+    GROUP BY
+        CASE
+            WHEN department = 'Other' THEN 'MCA'
+            ELSE department
+        END
+""")
     department_stats = cur.fetchall()
     
     conn.close()
@@ -2901,17 +2910,18 @@ def inject_globals():
     
 @app.before_request
 def before_request():
-    if current_user.is_authenticated:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        current_timestamp = format_datetime(get_current_datetime())
-        cur.execute("""
-            UPDATE users 
-            SET updated_at = ? 
-            WHERE id = ?
-        """, (current_timestamp, current_user.id))
-        conn.commit()
-        conn.close()
+        pass
+    #if current_user.is_authenticated:
+    #   conn = get_db_connection()
+    #  cur = conn.cursor()
+    #    current_timestamp = format_datetime(get_current_datetime())
+    #    cur.execute("""
+    #       UPDATE users 
+    #        SET updated_at = ? 
+    #       WHERE id = ?
+    #    """, (current_timestamp, current_user.id))
+    #   conn.commit()
+    #   conn.close()
 
 @app.route('/test')
 def test():
