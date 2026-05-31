@@ -361,6 +361,7 @@
           class="form-control"
           rows="4"
           placeholder="Detailed instructions..."
+           required
         ></textarea>
       </div>
 
@@ -387,7 +388,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Deadline</label>
-          <input type="date" name="deadline" class="form-control" min="{{ today }}" />
+          <input type="date" name="deadline" class="form-control" min="{{ today }}" required />
         </div>
       </div>
 
@@ -471,6 +472,7 @@
           id="taskFileInput"
           accept=".pdf,.doc,.docx,.txt,.zip"
           style="display: none"
+          
         />
         <input type="hidden" name="file_data" id="fileData" />
 
@@ -537,6 +539,7 @@
       el.style.color = "inherit";
       el.style.fontWeight = "400";
     });
+
     const selected = radio.nextElementSibling;
     selected.style.borderColor = "var(--primary)";
     selected.style.background = "var(--primary-light)";
@@ -544,25 +547,60 @@
     selected.style.fontWeight = "600";
   }
 
-  // File Upload Handler (Base64)
-  document
-    .getElementById("taskFileInput")
-    .addEventListener("change", function (e) {
-      const file = e.target.files[0];
-      if (file) {
-        if (file.size > 16 * 1024 * 1024) {
-          alert("File too large. Max 16MB.");
-          this.value = "";
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = function (event) {
-          document.getElementById("fileData").value = event.target.result;
-          document.getElementById("fileName").innerHTML =
-            `<i class="ri-file-check-line"></i> ${file.name}`;
-        };
-        reader.readAsDataURL(file);
+  // File Upload Handler
+  document.getElementById("taskFileInput").addEventListener("change", function (e) {
+    const file = e.target.files[0];
+
+    if (file) {
+      if (file.size > 16 * 1024 * 1024) {
+        alert("File too large. Max 16MB.");
+        this.value = "";
+        document.getElementById("fileData").value = "";
+        document.getElementById("fileName").innerHTML = "";
+        return;
       }
-    });
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        document.getElementById("fileData").value = event.target.result;
+        document.getElementById("fileName").innerHTML =
+          `<i class="ri-file-check-line"></i> ${file.name}`;
+      };
+
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Form Submit Validation
+  document.getElementById("taskForm").addEventListener("submit", function (e) {
+    const title = document.querySelector('input[name="title"]').value.trim();
+    const description = document.querySelector('textarea[name="description"]').value.trim();
+    const deadline = document.querySelector('input[name="deadline"]').value;
+    const fileInput = document.getElementById("taskFileInput");
+
+    if (!title) {
+      e.preventDefault();
+      alert("Please enter task title.");
+      return false;
+    }
+
+    if (!description) {
+      e.preventDefault();
+      alert("Please enter task description.");
+      return false;
+    }
+
+    if (!deadline) {
+      e.preventDefault();
+      alert("Please select task deadline.");
+      return false;
+    }
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      e.preventDefault();
+      alert("Please upload task attachment.");
+      return false;
+    }
+  });
 </script>
 {% endblock %}

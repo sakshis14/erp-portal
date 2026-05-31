@@ -86,6 +86,25 @@
       <i class="fas fa-paper-plane" style="color: var(--primary)"></i>
       Submission Form
     </h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div
+        style="
+          padding: 1rem;
+          margin-bottom: 1.5rem;
+          border-radius: 10px;
+          background: rgba(239, 68, 68, 0.12);
+          border: 1px solid #ef4444;
+          color: #ff4d4d;
+          font-weight: 600;
+        "
+      >
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
     <form action="{{ url_for('intern_submit') }}" method="POST" id="submitForm">
       <div class="form-group">
@@ -128,13 +147,14 @@
             id="file-input"
             style="display: none"
             onchange="handleFileSelect(this)"
+            
           />
           <i class="fas fa-cloud-upload-alt"></i>
           <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem">
             Click to Upload
           </h3>
           <p style="color: var(--text-muted); font-size: 0.9rem">
-            PDF, DOC, ZIP (Max 10MB)
+            PDF, DOC, ZIP (Max 16MB)
           </p>
           <div
             id="file-name"
@@ -151,19 +171,33 @@
 <script>
   function handleFileSelect(input) {
     const file = input.files[0];
-    if (file) {
-      document.getElementById("file-name").innerText = "Selected: " + file.name;
 
-      // Convert to Base64
+    if (file) {
+      if (file.size > 16 * 1024 * 1024) {
+        alert("File too large. Max 16MB.");
+        input.value = "";
+        document.getElementById("file_data").value = "";
+        document.getElementById("file_type").value = "";
+        document.getElementById("file-name").innerText = "";
+        return;
+      }
+
+      document.getElementById("file-name").innerText =
+        "Selected: " + file.name;
+
       const reader = new FileReader();
+
       reader.onload = function (e) {
         document.getElementById("file_data").value = e.target.result;
-        // Simple extension extraction
+
         const ext = file.name.split(".").pop().toLowerCase();
         document.getElementById("file_type").value = ext;
       };
+
       reader.readAsDataURL(file);
     }
   }
+
+  
 </script>
 {% endblock %}

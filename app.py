@@ -2329,6 +2329,11 @@ def intern_submit():
         content = request.form.get('content')
         file_data = request.form.get('file_data')
         file_type = request.form.get('file_type', 'other')
+
+
+        if not file_data:
+            flash("Please upload your task attachment before submitting work.", "error")
+            return redirect(url_for('intern_submit'))
         
         # Save file
         file_filename = None
@@ -2662,7 +2667,7 @@ def intern_documents():
         log_activity(current_user.id, 'UPLOAD_DOCUMENT', 'document_verifications')
         
         conn.close()
-        flash('Document uploaded successfully! Awaiting verification.', 'success')
+        flash('Document uploaded successfully! ', 'success')
         return redirect(url_for('intern_documents'))
     
     conn = get_db_connection()
